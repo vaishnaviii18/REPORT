@@ -1,0 +1,25 @@
+{
+  "name": "the-report-server",
+  "version": "1.0.0",
+  "description": "Backend for The Report: a weekly R-E-P-O-R-T journal for friend groups",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test",
+    "vapid": "node -e \"const w=require('web-push');console.log(w.generateVAPIDKeys())\""
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.8.0",
+    "web-push": "^3.6.7"
+  }
+}
