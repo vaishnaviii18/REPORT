@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { LETTER_KEYS, REACTIONS } = require('./constants');
+const { LETTER_KEYS } = require('./constants');
 
 const mediaSchema = new mongoose.Schema(
   {
@@ -30,16 +30,10 @@ const reportSchema = new mongoose.Schema(
     weekStart: { type: String, required: true }, // 'YYYY-MM-DD' (Monday)
     letters: { type: new mongoose.Schema(lettersShape, { _id: false }), default: () => ({}) },
     submittedAt: { type: Date, default: null },
-    reactions: [
-      {
-        _id: false,
-        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-        kind: { type: String, enum: REACTIONS, required: true },
-      },
-    ],
     comments: [
       {
         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+        letter: { type: String, enum: LETTER_KEYS, required: true }, // which letter it's under
         text: { type: String, required: true },
         createdAt: { type: Date, default: Date.now },
       },

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Report = require('../models/Report');
 const User = require('../models/User');
 const {
-  LETTER_KEYS, MEDIA_KINDS, MAX_TEXT, MAX_COMMENT, REACTIONS,
+  LETTER_KEYS, MEDIA_KINDS, MAX_TEXT, MAX_COMMENT,
 } = require('../models/constants');
 const { requireAuth, requireMember } = require('../middleware/auth');
 const { HttpError, wrap } = require('../utils/http');
@@ -41,9 +41,9 @@ function reportView(report, viewerId) {
     filled: report.filledCount(),
     sent: Boolean(report.submittedAt),
     submittedAt: report.submittedAt,
-    reactions: report.reactions,
-    myReaction: (report.reactions.find((r) => r.user.equals(viewerId)) || {}).kind || null,
-    comments: report.comments,
+    comments: report.comments.map((c) => ({
+      id: c._id, user: c.user, letter: c.letter, text: c.text, createdAt: c.createdAt,
+    })),
   };
 }
 
@@ -146,7 +146,7 @@ router.get('/', wrap(async (req, res) => {
   res.json({ week: weekInfo(weekStart), people });
 }));
 
-// --- Reactions and comments --------------------------------------------------
+// --- Comments (one thread under each letter) --------------------------------------------------
 
 async function loadVisible(req) {
   const { reportId } = req.params;
@@ -156,29 +156,15 @@ async function loadVisible(req) {
   return report;
 }
 
-// { kind } sets my reaction; same kind again removes it
-router.post('/:reportId/reactions', wrap(async (req, res) => {
-  const { kind } = req.body || {};
-  if (!REACTIONS.includes(kind)) throw new HttpError(400, 'Unknown reaction');
-  const report = await loadVisible(req);
-  const mine = report.reactions.find((r) => r.user.equals(req.user._id));
-  if (mine && mine.kind === kind) {
-    report.reactions = report.reactions.filter((r) => !r.user.equals(req.user._id));
-  } else if (mine) {
-    mine.kind = kind;
-  } else {
-    report.reactions.push({ user: req.user._id, kind });
-  }
-  await report.save();
-  res.json({ report: reportView(report, req.user._id) });
-}));
-
+// Comments sit under one letter: { letter, text }
 router.post('/:reportId/comments', wrap(async (req, res) => {
   const text = typeof req.body?.text === 'string' ? req.body.text.trim() : '';
   if (!text) throw new HttpError(400, 'Write something first');
   if (text.length > MAX_COMMENT) throw new HttpError(400, `Keep comments under ${MAX_COMMENT} characters`);
+  const { letter } = req.body || {};
+  if (!LETTER_KEYS.includes(letter)) throw new HttpError(400, 'Which letter is this comment for?');
   const report = await loadVisible(req);
-  report.comments.push({ user: req.user._id, text });
+  report.comments.push({ user: req.user._id, letter, text });
   await report.save();
   res.status(201).json({ report: reportView(report, req.user._id) });
 }));

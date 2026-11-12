@@ -24,7 +24,6 @@ const MAX_VIDEO_SECONDS = 60;
 const MAX_VOICE_SECONDS = 300;
 const MAX_TEXT = 2000;
 const MAX_COMMENT = 500;
-const REACTIONS = ['heart', 'haha', 'wow', 'cry', 'fire', 'hug'];
 
 module.exports = {
   LETTERS,
@@ -35,5 +34,4 @@ module.exports = {
   MAX_VOICE_SECONDS,
   MAX_TEXT,
   MAX_COMMENT,
-  REACTIONS,
 };

@@ -14,7 +14,7 @@ const MAX_DAYS_BACK = 60;
 
 function snapView(s) {
   return {
-    id: s._id, user: s.user, date: s.date, photo: s.photo, caption: s.caption,
+    id: s._id, user: s.user, date: s.date, photo: s.photo, caption: s.caption, createdAt: s.createdAt, updatedAt: s.updatedAt,
   };
 }
 

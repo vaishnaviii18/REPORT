@@ -16,4 +16,4 @@ Reports are sent by Saturday and revealed to the group on Sunday. There's also a
 ## Folders
 
 - `server/`: the backend (Node, Express, MongoDB). See `server/README.md`.
-- `client/`: the app screens (coming next).
+- `client/`: the app screens (React). See `client/README.md`.
