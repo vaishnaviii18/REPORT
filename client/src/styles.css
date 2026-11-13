@@ -188,3 +188,53 @@ h1, h2, h3 { font-family: var(--hand); font-weight: 700; margin: 0; line-height:
 .switch span { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 12px; background: #fff; transition: left 0.15s; }
 .switch[aria-checked='true'] { background: var(--navy); }
 .switch[aria-checked='true'] span { left: 25px; }
+
+/* ---------- Login: grid paper with pastel stars ---------- */
+.login-bg {
+  background-color: #FFFDF4;
+  background-image: linear-gradient(90deg, rgba(120, 190, 210, 0.35) 1.2px, transparent 1.2px), linear-gradient(0deg, rgba(120, 190, 210, 0.22) 1px, transparent 1px);
+  background-size: 44px 44px;
+  max-width: none; padding: 72px 22px 40px;
+}
+.login-wrap { max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+.login-card {
+  position: relative; background: #FFFDF8; border: 1px solid #E6DDCD; border-radius: 16px; padding: 32px 24px 24px;
+  box-shadow: 0 1px 0 #EFE7D8, 0 18px 40px rgba(60, 50, 30, 0.10); font-family: 'Nunito', sans-serif;
+}
+.login-card .tape { left: 50%; transform: translateX(-50%) rotate(-2deg); background: rgba(248, 211, 223, 0.85); width: 96px; height: 22px; top: -11px; }
+.login-card .field label { font-size: 14px; font-weight: 600; }
+.login-card .input { font-family: 'Nunito', sans-serif; font-size: 15px; border-color: #DED5C4; border-radius: 10px; height: 46px; }
+.login-card .tabs { background: #F4EFE6; border: none; }
+.login-card .tabs button { font-family: 'Nunito', sans-serif; font-size: 15px; color: #5E6475; }
+.login-card .tabs button[aria-selected='true'] { background: #fff; color: var(--ink); font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.login-card .btn.primary { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 16px; border-radius: 12px; }
+.login-points { display: none; }
+
+/* ---------- Laptop / tablet (768px and wider) ---------- */
+.sidebar { display: none; }
+@media (min-width: 768px) {
+  .bottom-nav { display: none; }
+  .shell { display: flex; min-height: 100vh; }
+  .sidebar {
+    display: flex; flex-direction: column; gap: 22px; position: sticky; top: 0; height: 100vh; overflow: hidden;
+    width: 250px; flex: none; padding: 28px 18px; background: #F6F1E7; border-right: 1px solid #E4DED1; box-sizing: border-box;
+  }
+  .sidebar .side-link { display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 14px; border-radius: 12px; text-decoration: none; color: var(--ink-2); font-size: 19px; border: 1px solid transparent; }
+  .sidebar .side-link.active { background: #fff; color: var(--ink); border-color: #E4DED1; }
+  .shell > .page { flex: 1; max-width: none; margin: 0; padding: 28px 40px 60px; }
+  .shell > .page .top .title { display: none; }
+  .cards-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .cards-2 > .report-card + .report-card { margin-top: 0; }
+  .cards-2 > * { margin-top: 0 !important; }
+  .split { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 28px; align-items: start; }
+  .split-wide { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 32px; align-items: start; }
+  .sticky { position: sticky; top: 24px; }
+  .me-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+  .toast { bottom: 32px; }
+
+  .login-bg { padding: 0; }
+  .login-wrap { max-width: 1100px; min-height: 100vh; display: grid; grid-template-columns: 1fr 420px; align-items: center; gap: 80px; padding: 40px 60px; box-sizing: border-box; }
+  .login-wrap h1 { font-size: 84px !important; }
+  .login-points { display: flex; flex-direction: column; gap: 14px; font-family: 'Nunito', sans-serif; font-size: 17px; color: #4A4537; margin-top: 24px; }
+  .login-points span { font-family: var(--hand); font-size: 28px; color: var(--navy); width: 26px; display: inline-block; }
+}

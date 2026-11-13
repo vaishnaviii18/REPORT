@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import MyReport from './pages/MyReport';
 import Snap from './pages/Snap';
 import Me from './pages/Me';
+import Sidebar from './components/Sidebar';
 
 const GROUP_KEY = 'report.group';
 const savedGroup = () => { try { return localStorage.getItem(GROUP_KEY); } catch { return null; } };
@@ -104,9 +105,10 @@ export default function App() {
   else screen = <Home {...shared} />;
 
   return (
-    <>
+    <div className="shell">
+      <Sidebar route={route} group={group} />
       {screen}
       {route !== '/me' && <BottomNav route={route} />}
-    </>
+    </div>
   );
 }

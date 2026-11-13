@@ -73,7 +73,20 @@ function MediaSlot({ kind, value, busy, onPick, onRemove, onZoom }) {
   );
 }
 
+function useWide() {
+  const q = '(min-width: 768px)';
+  const [wide, setWide] = useState(() => window.matchMedia(q).matches);
+  useEffect(() => {
+    const m = window.matchMedia(q);
+    const on = () => setWide(m.matches);
+    m.addEventListener('change', on);
+    return () => m.removeEventListener('change', on);
+  }, []);
+  return wide;
+}
+
 export default function MyReport({ user, setUser, group }) {
+  const wide = useWide();
   const [week, setWeek] = useState(null);
   const [report, setReport] = useState(null);
   const [texts, setTexts] = useState({});
@@ -101,6 +114,12 @@ export default function MyReport({ user, setUser, group }) {
   }, [group.id]);
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    if (wide && week && !open) {
+      const first = LETTERS.find((l) => !filledLetter({ ...((report && report.letters[l.key]) || {}), text: texts[l.key] }));
+      setOpen((first || LETTERS[0]).key);
+    }
+  }, [wide, week]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const saveLetter = useCallback(async (key, body) => {
     setSaving('Saving…');
@@ -139,7 +158,7 @@ export default function MyReport({ user, setUser, group }) {
 
   const toggle = (key) => {
     if (open) flush(open);
-    setOpen(open === key ? null : key);
+    setOpen(open === key && !wide ? null : key);
   };
 
   const pick = async (key, kind, file) => {
@@ -223,31 +242,16 @@ export default function MyReport({ user, setUser, group }) {
     );
   }
 
-  return (
-    <main className="page paper-dots">
-      {doodles}
-      {header}
-      <div className="stack">
-        <ColourPicker user={user} setUser={setUser} />
-
-        <div className="stack" style={{ gap: 6 }}>
-          <div className="row-between" style={{ fontSize: 17 }}>
-            <span>{filled} of 6 letters done</span>
-            <span className="help">due Saturday {shortDate(week.deadline)}</span>
-          </div>
-          <Progress filled={filled} />
-        </div>
-
-        {LETTERS.map((l) => {
+  const letterView = (l, listOnly) => {
           const data = { ...letters[l.key], text: texts[l.key] };
           const done = filledLetter(data);
           const isUp = uploading && uploading.key === l.key;
-          if (open !== l.key) {
+          if (open !== l.key || listOnly) {
             const preview = (texts[l.key] || '').trim().slice(0, 40)
               || [data.photo && 'photo', data.voice && 'voice note', data.video && 'video'].filter(Boolean).join(' · ');
             return (
-              <button key={l.key} type="button" className={`letter-item ${done ? 'done' : 'todo'}`}
-                style={done ? softCard(user.colorPair) : undefined} onClick={() => toggle(l.key)}>
+              <button key={l.key} type="button" className={`letter-item ${done ? 'done' : 'todo'}`} aria-current={open === l.key}
+                style={{ ...(done ? softCard(user.colorPair) : {}), ...(open === l.key ? { outline: '2px solid var(--navy)' } : {}) }} onClick={() => toggle(l.key)}>
                 <span className="big-letter">{l.letter}</span>
                 <span style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                   <span>{l.label}</span>
@@ -292,13 +296,38 @@ export default function MyReport({ user, setUser, group }) {
               <span className="help">1 photo · 1 voice note · 1 video (up to 1 min). All optional.</span>
             </section>
           );
-        })}
+  };
+
+  return (
+    <main className="page paper-dots">
+      {doodles}
+      {header}
+      <div className={wide ? 'split' : 'stack'}>
+      <div className={wide ? 'stack sticky' : 'stack'}>
+        <ColourPicker user={user} setUser={setUser} />
+
+        <div className="stack" style={{ gap: 6 }}>
+          <div className="row-between" style={{ fontSize: 17 }}>
+            <span>{filled} of 6 letters done</span>
+            <span className="help">due Saturday {shortDate(week.deadline)}</span>
+          </div>
+          <Progress filled={filled} />
+        </div>
+
+        {LETTERS.map((l) => letterView(l, wide))}
 
         <button type="button" className="btn primary block" style={{ height: 56, fontSize: 22 }}
           onClick={() => (filled < 6 ? setToast(`Fill all 6 letters to send (${filled} of 6 done)`) : setConfirm(true))}>
           Send my report
         </button>
         <span className="help" style={{ textAlign: 'center' }}>Fill all 6 letters to send · everyone's reports open on Sunday</span>
+      </div>
+      {wide && (
+        <div>
+          {open ? letterView(LETTERS.find((x) => x.key === open), false)
+            : <div className="box center" style={{ minHeight: 300 }}><p className="sub">Pick a letter on the left to start writing</p></div>}
+        </div>
+      )}
       </div>
 
       {confirm && (

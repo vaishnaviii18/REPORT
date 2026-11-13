@@ -101,7 +101,8 @@ export default function Snap({ user, group }) {
         <span className="sub">one photo a day, from each of us</span>
       </header>
 
-      <section className="calendar stack" style={{ gap: 10 }} aria-label="Calendar">
+      <div className="split-wide">
+      <section className="calendar stack sticky" style={{ gap: 10 }} aria-label="Calendar">
         <div className="cal-head">
           <button type="button" className="icon-btn" style={{ border: 'none', background: 'transparent' }} aria-label="Previous month"
             onClick={() => { setData(null); setMonth(shiftMonth(month, -1)); }}><Icon name="back" size={20} /></button>
@@ -143,6 +144,7 @@ export default function Snap({ user, group }) {
         </div>
       </section>
 
+      <div>
       <div className="row-between" style={{ margin: '18px 0 12px', alignItems: 'baseline' }}>
         <h2 style={{ fontSize: 32 }}>{isToday ? 'Today' : dayName(selected)} · {shortDate(selected)}</h2>
         <span className="help">{daySnaps.length} of {members.length}</span>
@@ -192,6 +194,8 @@ export default function Snap({ user, group }) {
       <p className="help" style={{ textAlign: 'center', marginTop: 16 }}>
         Tap any day to see that day's photos. Missed a day? Tap it and add one from your gallery.
       </p>
+      </div>
+      </div>
 
       <input ref={fileInput} type="file" accept="image/*" hidden onChange={choose} />
 

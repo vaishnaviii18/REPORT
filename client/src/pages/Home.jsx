@@ -139,6 +139,7 @@ export default function Home({
       {w.revealed ? (
         <>
           {sent.length === 0 && <p className="sub" style={{ textAlign: 'center' }}>Nobody sent a report that week.</p>}
+          <div className="cards-2">
           {sent.map((p) => (
             <ReportCard key={p.user.id} person={p} members={members} me={user} groupId={group.id}
               onChange={replaceReport} onZoom={setZoom} />
@@ -149,14 +150,17 @@ export default function Home({
               <span style={{ flex: 1, fontSize: 18 }}>{p.isMe ? 'You' : p.user.name} <span className="help">didn't send a report this week</span></span>
             </article>
           ))}
+          </div>
         </>
       ) : (
         <div className="stack" style={{ gap: 18 }}>
+          <div className="cards-2 stack" style={{ gap: 18 }}>
           {data.people.map((p) => (
             <article key={p.user.id} className="report-card" style={{ ...softCard(p.user.colorPair), marginTop: 0 }}>
               <ProgressCardBody p={p} isCurrent={isCurrent} open={w.open} onNudge={nudge} />
             </article>
           ))}
+          </div>
           {isCurrent && (
             <button type="button" className="link-btn" style={{ alignSelf: 'center' }} onClick={() => setWeek(addDays(w.weekStart, -7))}>
               ‹ Read last week's reports

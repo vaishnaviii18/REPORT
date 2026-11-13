@@ -58,6 +58,7 @@ export default function Me({
       </header>
 
       <div className="stack" style={{ gap: 16 }}>
+        <div className="me-grid stack" style={{ gap: 16 }}>
         <section className="box">
           <h2 style={{ fontSize: 26 }}>My details</h2>
           <div className="field">
@@ -112,7 +113,8 @@ export default function Me({
           </button>
         </section>
 
-        <button type="button" className="btn block" onClick={logout}>Log out</button>
+        </div>
+        <button type="button" className="btn block" style={{ maxWidth: 420 }} onClick={logout}>Log out</button>
       </div>
 
       {leaving && (
