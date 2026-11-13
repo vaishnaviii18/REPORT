@@ -7,10 +7,19 @@ Express + MongoDB API for The Report.
 ```bash
 cd server
 npm install
-cp .env.example .env   # then fill in the values
+# macOS/Linux:
+cp .env.example .env
+# Windows PowerShell:
+Copy-Item .env.example .env
+# Then replace the placeholders in .env with your own MongoDB, JWT, and
+# Cloudinary values. Do not commit .env or real credentials.
 npm run dev
 npm test               # week rules + upload checks
 ```
+
+Run these commands from `D:\vaish\REPORT\server`, not from
+`D:\vaish\REPORT`. The repository has separate `client` and `server`
+packages, so the workspace root does not have a `package.json`.
 
 ## Week rules (IST)
 
@@ -27,7 +36,7 @@ All routes except signup/login/health need `Authorization: Bearer <token>`.
 |---|---|---|
 | POST | /api/auth/signup | `{ name, email, password }` |
 | POST | /api/auth/login | `{ email, password }` |
-| GET / PATCH | /api/auth/me | read / change `name`, `colorPair` |
+| GET / PATCH | /api/auth/me | read / change `name`, `colorPair`, `avatar`, and `songs` |
 | GET / POST | /api/groups | my groups / create `{ name }` |
 | POST | /api/groups/join | `{ code }` |
 | GET | /api/groups/:id | group with members |
@@ -46,6 +55,25 @@ All routes except signup/login/health need `Authorization: Bearer <token>`.
 | POST | /api/jobs/:name | reminders, header `x-cron-secret` |
 
 Letter keys: `radio, eating, playing, obsessed, recommend, treating`.
+
+### Profile songs
+
+`PATCH /api/auth/me` accepts a `songs` array with up to 20 entries:
+
+```json
+{
+  "songs": [
+    {
+      "name": "Song title",
+      "code": "https://open.spotify.com/track/..."
+    }
+  ]
+}
+```
+
+Each song requires a name and a Spotify track URL or `spotify:track:` code.
+Profile photos are uploaded using the existing `photo` Cloudinary signature and
+saved by sending the returned URL as `avatar`.
 
 ## Reminders (cron-job.org, IST)
 

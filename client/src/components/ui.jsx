@@ -28,11 +28,13 @@ export function Icon({ name, size = 22, stroke = 1.8, label }) {
   );
 }
 
-export function Avatar({ name, colorPair, me, size }) {
+export function Avatar({ name, colorPair, me, size, src }) {
   const p = pair(colorPair);
   const style = { background: `linear-gradient(135deg, ${p.a} 50%, ${p.b} 50%)`, color: p.ink };
   if (size) Object.assign(style, { width: size, height: size, borderRadius: size / 2 });
-  return <span className="avatar" style={style}>{me ? 'Me' : initials(name)}</span>;
+  return <span className="avatar" style={{ ...style, overflow: 'hidden' }}>
+    {src ? <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (me ? 'Me' : initials(name))}
+  </span>;
 }
 
 export function Progress({ filled }) {

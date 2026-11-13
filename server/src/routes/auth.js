@@ -14,6 +14,35 @@ function cleanName(name) {
   return n;
 }
 
+function cleanSongs(songs) {
+  if (!Array.isArray(songs) || songs.length > 20) {
+    throw new HttpError(400, 'Add up to 20 songs');
+  }
+  return songs.map((song) => {
+    const name = typeof song.name === 'string' ? song.name.trim() : '';
+    const code = typeof song.code === 'string' ? song.code.trim() : '';
+    if (!name || name.length > 80 || !code || code.length > 300) {
+      throw new HttpError(400, 'Each song needs a name and Spotify code');
+    }
+    if (!/^https:\/\/open\.spotify\.com\/(embed\/)?track\/[A-Za-z0-9]+(?:\?.*)?$/.test(code)
+      && !/^spotify:track:[A-Za-z0-9]+$/.test(code)) {
+      throw new HttpError(400, 'Use a Spotify track link or Spotify track code');
+    }
+    return { name, code };
+  });
+}
+
+function cleanAvatar(avatar) {
+  if (avatar === '') return '';
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  if (typeof avatar !== 'string' || avatar.length > 500
+    || !cloudName
+    || !avatar.startsWith(`https://res.cloudinary.com/${cloudName}/image/upload/`)) {
+    throw new HttpError(400, 'Profile photo must be uploaded through the app');
+  }
+  return avatar;
+}
+
 router.post('/signup', wrap(async (req, res) => {
   const { email, password } = req.body || {};
   const name = cleanName(req.body && req.body.name);
@@ -43,14 +72,16 @@ router.get('/me', requireAuth, (req, res) => {
   res.json({ user: req.user.toPublic() });
 });
 
-// Change name or report colours
+// Change profile details, report colours, profile photo, or Spotify songs.
 router.patch('/me', requireAuth, wrap(async (req, res) => {
-  const { name, colorPair } = req.body || {};
+  const { name, colorPair, avatar, songs } = req.body || {};
   if (name !== undefined) req.user.name = cleanName(name);
   if (colorPair !== undefined) {
     if (!COLOR_PAIRS.includes(colorPair)) throw new HttpError(400, 'Unknown colour');
     req.user.colorPair = colorPair;
   }
+  if (avatar !== undefined) req.user.avatar = cleanAvatar(avatar);
+  if (songs !== undefined) req.user.songs = cleanSongs(songs);
   await req.user.save();
   res.json({ user: req.user.toPublic() });
 }));

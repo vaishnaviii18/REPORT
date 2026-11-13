@@ -101,6 +101,9 @@ h1, h2, h3 { font-family: var(--hand); font-weight: 700; margin: 0; line-height:
 .tape { position: absolute; top: -10px; left: 30px; width: 74px; height: 20px; background: rgba(255, 255, 255, 0.75); transform: rotate(-4deg); }
 .person { display: flex; align-items: center; gap: 10px; }
 .avatar { width: 40px; height: 40px; border-radius: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; flex: none; }
+.profile-photo-row { display: flex; align-items: center; gap: 12px; }
+.profile-photo { width: 76px; height: 76px; border-radius: 38px; background: #E8E2D6; border: 2px dashed #B7A3E0; display: flex; align-items: center; justify-content: center; overflow: hidden; font-family: var(--hand); font-size: 34px; }
+.profile-photo img { width: 100%; height: 100%; object-fit: cover; }
 .progress { display: flex; gap: 5px; }
 .progress span { flex: 1; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.85); }
 .progress span.on { background: var(--navy); }
@@ -188,6 +191,13 @@ h1, h2, h3 { font-family: var(--hand); font-weight: 700; margin: 0; line-height:
 .switch span { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 12px; background: #fff; transition: left 0.15s; }
 .switch[aria-checked='true'] { background: var(--navy); }
 .switch[aria-checked='true'] span { left: 25px; }
+.song-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+.song-flip { height: 120px; perspective: 800px; outline: none; }
+.song-flip-inner { width: 100%; height: 100%; position: relative; transition: transform .55s; transform-style: preserve-3d; }
+.song-flip:hover .song-flip-inner, .song-flip:focus .song-flip-inner { transform: rotateY(180deg); }
+.song-face { position: absolute; inset: 0; backface-visibility: hidden; border: 1px solid #DCD6C8; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; overflow-wrap: anywhere; }
+.song-front { background: #EAF4EF; }
+.song-back { background: #F7EAF1; transform: rotateY(180deg); font-family: monospace; font-size: 11px; }
 
 /* ---------- Login: grid paper with pastel stars ---------- */
 .login-bg {
