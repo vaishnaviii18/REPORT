@@ -8,11 +8,16 @@ import { Doodle } from '../components/Doodles';
 import { Confirm, Icon, useToast } from '../components/ui';
 import { InviteBox } from './GroupSetup';
 import { go } from '../lib/router';
+import { uploadMedia } from '../lib/upload';
 
 export default function Me({
   user, setUser, group, groups, setGroupId, refreshGroups, logout,
 }) {
   const [name, setName] = useState(user.name);
+  const [songs, setSongs] = useState(user.songs || []);
+  const [songName, setSongName] = useState('');
+  const [songCode, setSongCode] = useState('');
+  const [avatarBusy, setAvatarBusy] = useState(false);
   const [notify, setNotify] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [toast, setToast] = useToast();
@@ -34,6 +39,40 @@ export default function Me({
     try {
       if (notify) { await turnOffNotifications(); setNotify(false); } else { await turnOnNotifications(); setNotify(true); }
     } catch (err) { setToast(err.message); }
+  };
+
+  const addSong = async (e) => {
+    e.preventDefault();
+    try {
+      const next = [...songs, { name: songName.trim(), code: songCode.trim() }];
+      const res = await api('/auth/me', { method: 'PATCH', body: { songs: next } });
+      setSongs(res.user.songs || []);
+      setSongName('');
+      setSongCode('');
+      setUser(res.user);
+      setToast('Song added');
+    } catch (err) { setToast(err.message); }
+  };
+
+  const removeSong = async (id) => {
+    try {
+      const res = await api('/auth/me', { method: 'PATCH', body: { songs: songs.filter((song) => song._id !== id) } });
+      setSongs(res.user.songs || []);
+      setUser(res.user);
+      setToast('Song removed');
+    } catch (err) { setToast(err.message); }
+  };
+
+  const chooseAvatar = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setAvatarBusy(true);
+    try {
+      const avatar = await uploadMedia(group.id, 'photo', file);
+      const res = await api('/auth/me', { method: 'PATCH', body: { avatar: avatar.url } });
+      setUser(res.user);
+      setToast('Profile photo saved');
+    } catch (err) { setToast(err.message); } finally { setAvatarBusy(false); e.target.value = ''; }
   };
 
   const leave = async () => {
@@ -61,6 +100,19 @@ export default function Me({
         <div className="me-grid stack" style={{ gap: 16 }}>
         <section className="box">
           <h2 style={{ fontSize: 26 }}>My details</h2>
+          <div className="profile-photo-row">
+            <div className="profile-photo">
+              {user.avatar ? <img src={user.avatar} alt="Your profile" /> : <span>{user.name.slice(0, 1).toUpperCase()}</span>}
+            </div>
+            <div className="stack" style={{ gap: 4 }}>
+              <strong>Profile photo</strong>
+              <span className="help">Choose a photo for your profile</span>
+              <label className="btn small" style={{ width: 'fit-content' }}>
+                {avatarBusy ? 'Uploading…' : 'Add photo'}
+                <input type="file" accept="image/*" hidden disabled={avatarBusy} onChange={chooseAvatar} />
+              </label>
+            </div>
+          </div>
           <div className="field">
             <label htmlFor="nm">Name on my card</label>
             <div style={{ display: 'flex', gap: 8 }}>
@@ -75,6 +127,32 @@ export default function Me({
               <button key={key} type="button" role="radio" aria-checked={user.colorPair === key} aria-label={p.name}
                 className="swatch" style={{ background: `linear-gradient(135deg, ${p.a} 50%, ${p.b} 50%)` }}
                 onClick={() => saveProfile({ colorPair: key })} />
+            ))}
+          </div>
+        </section>
+
+        <section className="box">
+          <h2 style={{ fontSize: 26 }}>My Spotify songs</h2>
+          <p className="help" style={{ margin: 0 }}>Add tracks you love. Hover or tap a card to flip it.</p>
+          <form className="stack" onSubmit={addSong}>
+            <div className="field">
+              <label htmlFor="song-name">Song name</label>
+              <input id="song-name" className="input" value={songName} maxLength={80} onChange={(e) => setSongName(e.target.value)} placeholder="A song you love" required />
+            </div>
+            <div className="field">
+              <label htmlFor="song-code">Spotify track link or code</label>
+              <input id="song-code" className="input" value={songCode} maxLength={300} onChange={(e) => setSongCode(e.target.value)} placeholder="https://open.spotify.com/track/..." required />
+            </div>
+            <button type="submit" className="btn primary" disabled={songs.length >= 20}>Add song</button>
+          </form>
+          <div className="song-grid">
+            {songs.map((song) => (
+              <div className="song-flip" tabIndex="0" key={song._id || song.code}>
+                <div className="song-flip-inner">
+                  <div className="song-face song-front"><strong>{song.name}</strong><span className="help">Hover to see code</span></div>
+                  <div className="song-face song-back"><span>{song.code}</span><button type="button" className="link-btn danger" onClick={() => removeSong(song._id)}>Remove</button></div>
+                </div>
+              </div>
             ))}
           </div>
         </section>

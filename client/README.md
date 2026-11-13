@@ -23,4 +23,5 @@ npm run dev
 - Home: progress Monday–Saturday with nudges; on Sunday everyone's reports, with a comment box under each letter; arrows for past weeks
 - My report: colour pair, 6 letters with text + 1 photo + 1 voice note (record or pick) + 1 video (up to 1 min), auto-save, send when all 6 are filled
 - Daily snap: calendar, one photo a day each, add missed days from the gallery, nudges
-- Me: name, colours, notifications, groups, log out
+- Me: profile photo, name, colours, notifications, groups, log out, and a
+  Spotify song dashboard with hover-to-flip song code cards
